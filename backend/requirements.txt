@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+pandas
+sqlalchemy
+python-multipart
+pydantic
+openai
+requests
+python-dotenv
+aiofiles

@@ -1,9 +1,9 @@
 export default function SuggestedPrompts({ onSelect }) {
   const prompts = [
-    { icon: '💰', title: 'Income Overview', prompt: 'What was my total income this period?' },
-    { icon: '📊', title: 'Expense Analysis', prompt: 'Break down my expenses by category' },
-    { icon: '🎯', title: 'Tax Deductions', prompt: 'What are my potential tax deductions?' },
-    { icon: '📈', title: 'Financial Health', prompt: 'How is my financial health looking?' },
+    { icon: '💰', title: 'Income Tax Slabs', prompt: 'What are the current income tax slabs in India?' },
+    { icon: '🎯', title: 'Section 80C', prompt: 'How can I save tax under Section 80C?' },
+    { icon: '�', title: 'Health Insurance', prompt: 'What deductions can I claim for health insurance?' },
+    { icon: '�', title: 'My Deductions', prompt: 'What are my potential tax deductions?' },
   ]
 
   return (

@@ -8,3 +8,10 @@ openai
 requests
 python-dotenv
 aiofiles
+
+# RAG dependencies
+chromadb
+sentence-transformers
+langchain
+langchain-community
+tiktoken

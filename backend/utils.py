@@ -1,25 +1,72 @@
 import pandas as pd
 from typing import List, Dict
 
-INCOME_KEYWORDS = ["salary", "payroll", "payroll deposit", "income", "credit"]
-EXPENSE_KEYWORDS = ["rent", "grocery", "groceries", "uber", "lyft", "dining", "restaurant", "shopping", "transfer", "payment", "bill"]
-DEDUCTIBLE_KEYWORDS = ["medical", "doctor", "hospital", "pharmacy", "charity", "donation", "charitable"]
+# Indian context keywords
+INCOME_KEYWORDS = [
+    "salary", "payroll", "income", "credit", "bonus", "incentive",
+    "freelance", "consulting", "interest", "dividend", "capital gain",
+    "professional fees", "commission", "rental income", "business income"
+]
+
+EXPENSE_KEYWORDS = [
+    "rent", "grocery", "groceries", "swiggy", "zomato", "uber", "ola",
+    "dining", "restaurant", "shopping", "flipkart", "amazon", "myntra",
+    "transfer", "payment", "bill", "electricity", "water", "gas",
+    "phone", "mobile", "internet", "broadband", "recharge",
+    "fuel", "petrol", "diesel", "maintenance", "repair"
+]
+
+# Indian tax deductible categories (Section 80C, 80D, etc.)
+DEDUCTIBLE_KEYWORDS = [
+    # Medical - Section 80D
+    "medical", "doctor", "hospital", "pharmacy", "apollo", "fortis",
+    "health insurance", "mediclaim", "star health",
+    
+    # Insurance - Section 80C
+    "lic", "life insurance", "sbi life", "hdfc life", "icici prudential",
+    
+    # Investments - Section 80C
+    "ppf", "epf", "pf", "provident fund", "elss", "mutual fund",
+    "nsc", "national savings", "tax saver", "sukanya samriddhi",
+    
+    # Donations - Section 80G
+    "charity", "donation", "charitable", "ngo", "relief fund",
+    "pm cares", "national defence fund",
+    
+    # Education - Section 80E
+    "tuition", "school fees", "college fees", "education loan",
+    
+    # Home Loan - Section 24
+    "home loan", "housing loan", "mortgage interest", "hdfc home",
+    "sbi home loan", "icici home loan",
+    
+    # NPS - Section 80CCD(1B)
+    "nps", "national pension", "pension scheme"
+]
 
 
 def classify_description(desc: str, amount: float) -> str:
+    """Classify transaction for Indian tax context"""
     if not isinstance(desc, str):
         desc = ""
     txt = desc.lower()
+    
+    # Check for income keywords
     for k in INCOME_KEYWORDS:
         if k in txt:
             return "income"
+    
+    # Check for deductible keywords (important for Indian tax saving)
     for k in DEDUCTIBLE_KEYWORDS:
         if k in txt:
             return "deductible"
+    
+    # Check for expense keywords
     for k in EXPENSE_KEYWORDS:
         if k in txt:
             return "expense"
-    # fallback by amount sign: positive income, negative expense
+    
+    # Fallback by amount sign
     return "income" if amount > 0 else "expense"
 
 

@@ -112,8 +112,19 @@ async def chat(req: ChatRequest):
     if summ:
         summary_text = summ.data
 
-    system_prompt = "You are TaxEase, a helpful tax assistant. Use the uploaded statement summary to answer user questions. Be concise and indicate potential deductions when relevant."
-    prompt = f"Session summary: {summary_text}\n\nUser question: {req.message}\n\nAnswer based only on the data and common tax rules. If unsure, say you don't know and suggest helpful next steps."
+    system_prompt = """You are TaxEase AI, an expert Indian tax assistant specializing in Income Tax, GST, and financial planning. 
+    
+    Your knowledge includes:
+    - Indian Income Tax Act (Sections 80C, 80D, 24, etc.)
+    - GST regulations
+    - ITR forms and filing procedures
+    - Tax-saving investments (PPF, ELSS, NPS, etc.)
+    - Deductions and exemptions
+    
+    Always provide amounts in Indian Rupees (₹). Be helpful, accurate, and suggest legitimate tax-saving strategies. 
+    Recommend consulting a CA for complex cases."""
+    
+    prompt = f"Session summary: {summary_text}\n\nUser question: {req.message}\n\nProvide a helpful answer based on the user's financial data and Indian tax regulations. Include specific section numbers (80C, 80D, etc.) when relevant."
 
     try:
         reply = llm.ask_llm(prompt, system=system_prompt)

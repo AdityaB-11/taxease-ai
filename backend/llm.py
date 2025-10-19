@@ -89,7 +89,7 @@ def ask_llm_with_rag(prompt: str, system: Optional[str] = None, use_rag: bool = 
             rag = initialize_rag()
             rag_context = rag.get_context_for_query(prompt, max_chunks=3)
             
-            # If using mock LLM AND RAG has good results, prioritize RAG content
+            # If using mock LLM AND RAG has good results AND no real LLM available
             # Don't prepend RAG context to prompt for mock LLM (causes keyword conflicts)
             # Instead, use RAG directly
             if ENABLE_MOCK_LLM and not OPENAI_API_KEY and not OLLAMA_HOST:
@@ -102,21 +102,10 @@ def ask_llm_with_rag(prompt: str, system: Optional[str] = None, use_rag: bool = 
             print(f"RAG error: {e}")
             # Continue without RAG
     
-    # Try OpenAI
-    if OPENAI_API_KEY:
-        try:
-            messages = []
-            if system:
-                messages.append({"role": "system", "content": system})
-            messages.append({"role": "user", "content": prompt})
-            resp = openai.ChatCompletion.create(model=OPENAI_MODEL, messages=messages, max_tokens=800)
-            return resp.choices[0].message.content
-        except Exception as e:
-            print(f"OpenAI error: {e}")
-
-    # Try Ollama
+    # Try Ollama first (prefer local LLM)
     if OLLAMA_HOST:
         try:
+            print(f"🤖 Using Ollama at {OLLAMA_HOST} with model {OLLAMA_MODEL}")
             url = f"{OLLAMA_HOST}/api/generate"
             
             # Construct full prompt with system message for Ollama
@@ -133,7 +122,7 @@ def ask_llm_with_rag(prompt: str, system: Optional[str] = None, use_rag: bool = 
                     "top_p": 0.9,
                 }
             }
-            r = requests.post(url, json=payload, timeout=60)
+            r = requests.post(url, json=payload, timeout=120)
             r.raise_for_status()
             data = r.json()
             
@@ -145,10 +134,25 @@ def ask_llm_with_rag(prompt: str, system: Optional[str] = None, use_rag: bool = 
                     return data["text"]
             return str(data)
         except Exception as e:
-            print(f"Ollama error: {e}")
+            print(f"⚠️ Ollama error: {e}")
+            print("Falling back to OpenAI/Mock LLM")
+
+    # Try OpenAI
+    if OPENAI_API_KEY:
+        try:
+            print(f"🤖 Using OpenAI API")
+            messages = []
+            if system:
+                messages.append({"role": "system", "content": system})
+            messages.append({"role": "user", "content": prompt})
+            resp = openai.ChatCompletion.create(model=OPENAI_MODEL, messages=messages, max_tokens=800)
+            return resp.choices[0].message.content
+        except Exception as e:
+            print(f"⚠️ OpenAI error: {e}")
 
     # Use mock LLM as fallback
     if ENABLE_MOCK_LLM:
+        print(f"🤖 Using Mock LLM")
         return mock_llm_response(prompt, system)
     
     raise RuntimeError("No LLM configured. Set OPENAI_API_KEY or OLLAMA_HOST environment variable, or enable ENABLE_MOCK_LLM=true for demo mode.")

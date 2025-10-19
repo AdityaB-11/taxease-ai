@@ -1,10 +1,15 @@
 import json
+import os
+from dotenv import load_dotenv
+
+# Load environment variables FIRST, before importing anything else that needs them
+load_dotenv()
+
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import db, models, utils, llm
 from schemas import UploadResponse, ChatRequest, ChatResponse
-import os
 
 app = FastAPI(title="TaxEase AI Backend")
 app.add_middleware(

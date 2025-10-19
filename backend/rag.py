@@ -16,7 +16,7 @@ class IndianTaxRAG:
         
         # Initialize embedding model (multilingual for Hindi support)
         print("Loading embedding model...")
-        self.embedding_model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-mpnet-base-v2')
+        self.embedding_model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-mpnet-base-v2', device='cpu')
         
         # Initialize ChromaDB with persistent client (new API)
         print("Initializing ChromaDB...")
